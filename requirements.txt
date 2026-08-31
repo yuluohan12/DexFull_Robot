@@ -1,0 +1,5 @@
+-e .[control,imaging]
+
+# Unitree SDK, Pinocchio/CasADi and Inspire SDK are robot-platform packages.
+# Install them from the robot vendor environment before running DexFull.
+

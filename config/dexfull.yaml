@@ -1,0 +1,138 @@
+ws:
+  host: 0.0.0.0
+  port: 7443
+  path: /ws
+  # Small realtime JSON frames favour latency over per-message deflate.
+  compression: false
+  # Production must never silently fall back to plaintext ws://.
+  allow_insecure_transport: false
+  tls:
+    enabled: true
+    # Generate this common certificate once, then securely install the same
+    # pair on every robot. Never commit or distribute the private key publicly.
+    cert_file: ~/.config/dexfull/ws-tls/server-cert.pem
+    key_file: ~/.config/dexfull/ws-tls/server-key.pem
+
+runtime:
+  # First boot may include camera discovery, TLS setup and IK cache creation.
+  startup_wait: 120.0
+  # Maximum wait for both selected-hand DDS state topics. The wait is
+  # callback-based and can be cancelled immediately during stop/shutdown.
+  hand_startup_wait: 15.0
+  auto_start_teleimager: true
+  stop_timeout: 15.0
+  # XR/control lifecycle is independent from the selected hand service.
+  stop_hand_with_control: false
+  # Device failures are reported independently; they do not stop XR/control.
+  device_status_poll_seconds: 0.5
+  device_stale_seconds: 2.0
+  # Warn if the actual robot control loop stops advancing while XR stays live.
+  control_stall_seconds: 2.0
+  device_startup_grace_seconds: 8.0
+
+control:
+  frequency: 60.0
+  input_mode: hand
+  display_mode: immersive
+  robot: G1_29
+  hand: brainco
+  img_server_ip: auto
+  # Strongly recommended on the robot: set this to the NIC connected to the
+  # Unitree DDS network (for example eth0). It can also be overridden with
+  # DEXFULL_DDS_INTERFACE without editing this file.
+  network_interface: null
+  motion: true
+  # Keep legacy whole-process affinity off. The isolated control process and
+  # its IK worker use targeted scheduling instead.
+  affinity: false
+  headless: true
+  simulation: false
+  record: false
+  # Nonlinear IK runs on a latest-target worker. XR and BrainCo input stay at
+  # control.frequency even when an IK solve overruns its 16.7 ms budget.
+  async_ik: true
+  # "auto" assigns only the IK worker to the upper half of available cores.
+  # Do not enable the legacy process-wide affinity option above in DexFull.
+  ik_cpu_affinity: auto
+  # Left/right hand retargeting runs in two compute processes. "auto" keeps
+  # them off the upper-half arm IK cores; DDS publication uses an I/O core.
+  hand_retarget_cpu_affinity: auto
+  hand_dds_cpu_affinity: auto
+  # IPOPT is warm-started across frames. Bound iterations so an obsolete pose
+  # cannot block tracking for hundreds of milliseconds.
+  ik_max_iterations: 12
+  performance_log_interval: 5.0
+  root_pose_mode: unity_relative
+  root_pelvis_height: 0.76
+  root_axis_mapping: unitree_to_unity
+  root_heading_reference: initial
+  root_vertical_mode: filtered
+  root_vertical_deadband: 0.01
+  root_vertical_filter_alpha: 0.2
+
+telemetry:
+  # Bridge owns these clocks and subscribes to DDS independently of IK.
+  robot_hz: 30.0
+  vr_hz: 30.0
+  enable_robot_ws: true
+  enable_vr_ws: true
+
+teleimager:
+  enabled: true
+  realsense: true
+  affinity: false
+  config: cam_config_server.yaml
+  auto_restart: true
+  # Low-overhead metadata-only diagnostics. Files are written under tools/;
+  # JPEG payloads are not duplicated.
+  record_camera_frames: true
+  camera_record_dir: tools/camera_frame_records
+
+hand_drivers:
+  brainco:
+    enabled: true
+    isolation: external_process
+    service: brainco
+    auto_restart: true
+  dex1:
+    enabled: true
+    isolation: in_process
+  dex3:
+    enabled: true
+    isolation: in_process
+  inspire_dfx:
+    enabled: true
+    isolation: in_process
+  inspire_ftp:
+    enabled: true
+    isolation: in_process
+
+basic_infos:
+  version: 2.3.3
+  date: ""
+  author: unitree
+  robot_name: null
+  hand_name: null
+  control_type: null
+  image_width: 640
+  image_height: 480
+  image_fps: 30.0
+  input_device_frequency: 60.0
+  push_data_frequency: 30.0
+  depth_width: 0
+  depth_height: 0
+  depth_fps: 0.0
+  audio_sample_rate: 0
+  audio_channels: 0
+  audio_format: ""
+  audio_bits: 0
+
+zmq:
+  host: auto
+  head_port: 55555
+  left_wrist_port: 55556
+  right_wrist_port: 55557
+
+logging:
+  level: INFO
+  format: "%(asctime)s [%(name)s] %(levelname)s: %(message)s"

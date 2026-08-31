@@ -1,0 +1,106 @@
+# =====================================================
+# Head camera configuration
+# =====================================================
+# camera topic
+head_camera:
+  # camera config
+
+  # if enable_zmq and enable_webrtc are both false, the camera will not start
+  # Set to true to enable ZMQ publishing, false to disable
+  enable_zmq: true
+  # Port to publish camera stream, e.g. zmq tcp://*:55555.  image_client.py should connect to the same port
+  zmq_port : 55555
+  # Set to true to enable WebRTC publishing, false to disable
+  enable_webrtc: false
+  # Port for WebRTC signaling server
+  webrtc_port : 60001
+  # webrtc codec preference, options: "vp8", "h264"
+  webrtc_codec: h264
+
+  # Type of camera:
+  #   - "opencv"    → opencv driver
+  #   - "realsense" → pyrealsense2 driver
+  #   - "uvc"       → pyuvc driver
+  type: realsense
+  # Image Format
+  # image resolution: [height, width]
+  image_shape: [480,640]
+  binocular: false
+  # frame per second
+  fps: 30
+
+  # Camera identifiers (choose one or more):
+  #   - video_id: X        → /dev/videoX  (e.g. 0 → /dev/video0)
+  #   - serial_number: Y   → camera's hardware serial (e.g. 141722079879)
+  #   - physical_path: Z   → sysfs physical USB path (e.g. /sys/devices/pci0000:00/.../1-11.2:1.0)
+  #
+  # Identifier priority:
+  #   physical_path > serial_number > video_id
+  #   if an identifier is not used, set it to null. The system will resolve the camera by priority.
+  #
+  # Notes:
+  #   - type "realsense": supports serial_number only (but a RealSense can also be used as opencv/uvc if desired)
+  #   - type "opencv":    supports video_id, serial_number, physical_path
+  #   - type "uvc":       supports video_id, serial_number, physical_path
+  video_id: null
+  serial_number: 254322073111
+  physical_path: null
+  # Keep RealSense SDK waits, frame-wrapper cleanup and JPEG encoding out of
+  # the Teleimager supervisor. The child retains only the newest frame and is
+  # killed/recreated if a physical disconnect makes the SDK call hang.
+  isolate_capture_process: true
+  frame_timeout_seconds: 1.0
+  startup_timeout_seconds: 8.0
+  # pyrealsense2 frame wrappers are ref-counted; disabling cyclic GC in this
+  # dedicated child avoids allocation-count based pauses in the capture loop.
+  disable_cyclic_gc: true
+  # Reserve one CPU for librealsense delivery and JPEG encoding. This is
+  # independent of the legacy whole-teleimager affinity switch.
+  capture_cpu_affinity: auto
+
+  # Device-level retries never stop; short cap keeps reinsertion responsive.
+  reconnect_backoff_seconds: [0.5, 1, 2, 5,10]
+
+# =====================================================
+# Left wrist camera configuration
+# =====================================================
+left_wrist_camera:
+  enable_zmq: true
+  zmq_port : 55556
+  enable_webrtc: false
+  webrtc_port : 60002
+  webrtc_codec: h264
+  type: opencv
+  image_shape: [480, 640]
+  binocular: false
+  fps: 30
+  video_id: null
+  serial_number: null
+  physical_path: /sys/devices/platform/bus@0/3610000.usb/usb2/2-2/2-2.2/2-2.2:1.4
+  # VideoCapture.read() can block indefinitely after a USB fault. Keep each
+  # wrist capture in a killable child so only that camera is restarted.
+  isolate_capture_process: true
+  frame_timeout_seconds: 1.0
+  startup_timeout_seconds: 5.0
+  reconnect_backoff_seconds: [0.5, 1, 2, 5,10]
+
+# =====================================================
+# Right wrist camera configuration
+# =====================================================
+right_wrist_camera:
+  enable_zmq: true
+  zmq_port : 55557
+  enable_webrtc: false
+  webrtc_port: 60003
+  webrtc_codec: h264
+  type: opencv
+  image_shape: [480, 640]
+  binocular: false
+  fps: 30
+  video_id: null
+  serial_number: null
+  physical_path: /sys/devices/platform/bus@0/3610000.usb/usb2/2-2/2-2.1/2-2.1:1.4 
+  isolate_capture_process: true
+  frame_timeout_seconds: 1.0
+  startup_timeout_seconds: 5.0
+  reconnect_backoff_seconds: [0.5, 1, 2, 5,10]

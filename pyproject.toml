@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "DexFull"
+version = "2.3.3"
+description = "Unified XR teleoperation, robot adapters, hand drivers and Unity transport"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+  "PyYAML>=6.0",
+  "websockets>=12.0",
+  "numpy>=1.23,<2",
+  "opencv-python>=4.8",
+  "pyzmq>=25.0",
+  "logging-mp",
+  "psutil>=5.9",
+  "sshkeyboard>=2.3.1",
+]
+
+[project.optional-dependencies]
+control = [
+  "matplotlib==3.7.5",
+  "rerun-sdk==0.20.1",
+  "meshcat==0.3.2",
+  "vuer[all]==0.0.60",
+]
+imaging = ["aiohttp", "aiortc", "pupil-labs-uvc"]
+test = ["pytest>=8.0", "pytest-asyncio>=0.23", "trustme>=1.1"]
+
+[project.scripts]
+dexfull = "dexfull.app:main"
+dexfull-teleimager = "dexfull.imaging.image_server:main"
+dexfull-camera-setup = "dexfull.imaging.camera_setup:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dexfull*"]
+
+[tool.setuptools.package-data]
+"dexfull.hand_drivers.brainco" = [
+  "native/include/**/*",
+  "native/lib/**/*",
+  "native/bin/*",
+  "native/*.cpp",
+  "native/CMakeLists.txt",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

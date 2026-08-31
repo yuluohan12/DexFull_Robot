@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+.runtime/
+.venv/
+.uv-cache-*/
+.uv-python-*/
+uv.lock
+log/
+build/
+dist/
+*.egg-info/
+data/
+tools/camera_frame_records/

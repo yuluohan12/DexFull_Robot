@@ -1,0 +1,74 @@
+head_camera:
+  enable_zmq: true
+  zmq_port: 55555
+  enable_webrtc: false
+  webrtc_port: 60001
+  webrtc_codec: h264
+  type: realsense
+  image_shape:
+  - 480
+  - 640
+  binocular: false
+  fps: 30
+  video_id: null
+  serial_number: 254322073111
+  physical_path: null
+  isolate_capture_process: true
+  frame_timeout_seconds: 1.0
+  startup_timeout_seconds: 8.0
+  disable_cyclic_gc: true
+  capture_cpu_affinity: auto
+  reconnect_backoff_seconds:
+  - 0.5
+  - 1
+  - 2
+  - 5
+  - 10
+left_wrist_camera:
+  enable_zmq: true
+  zmq_port: 55556
+  enable_webrtc: false
+  webrtc_port: 60002
+  webrtc_codec: h264
+  type: opencv
+  image_shape:
+  - 480
+  - 640
+  binocular: false
+  fps: 30
+  video_id: null
+  serial_number: null
+  physical_path: /sys/devices/platform/bus@0/3610000.usb/usb2/2-2/2-2.2/2-2.2:1.4
+  isolate_capture_process: true
+  frame_timeout_seconds: 1.0
+  startup_timeout_seconds: 5.0
+  reconnect_backoff_seconds:
+  - 0.5
+  - 1
+  - 2
+  - 5
+  - 10
+right_wrist_camera:
+  enable_zmq: true
+  zmq_port: 55557
+  enable_webrtc: false
+  webrtc_port: 60003
+  webrtc_codec: h264
+  type: opencv
+  image_shape:
+  - 480
+  - 640
+  binocular: false
+  fps: 30
+  video_id: null
+  serial_number: null
+  physical_path: /sys/devices/platform/bus@0/3610000.usb/usb2/2-2/2-2.1/2-2.1:1.4
+  isolate_capture_process: true
+  frame_timeout_seconds: 1.0
+  startup_timeout_seconds: 5.0
+  reconnect_backoff_seconds:
+  - 0.5
+  - 1
+  - 2
+  - 5
+  - 10
